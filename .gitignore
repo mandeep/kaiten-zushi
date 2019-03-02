@@ -50,4 +50,5 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-
+# Jetbrains Rider generated files
+.idea/
