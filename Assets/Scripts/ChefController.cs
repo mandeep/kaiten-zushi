@@ -15,7 +15,7 @@ public class ChefController : MonoBehaviour
     public GameObject[] plates;
     public GameObject[] effects;
     public GameObject spot_light;
-    private List<GameObject> clones; 
+    private LinkedList<GameObject> clones; 
     private float rate;
     private Vector3 spawn_point;
     private int count;
@@ -100,7 +100,7 @@ public class ChefController : MonoBehaviour
     void Start()
     {   
         spawn_point = new Vector3(0.0f, 1.05f, 5.0f);
-        clones = new List<GameObject>();
+        clones = new LinkedList<GameObject>();
         count = 0;
         panel_state = false;
         panel.SetActive(false);
@@ -153,7 +153,7 @@ public class ChefController : MonoBehaviour
 
             if (is_spawn) {
                 GameObject clone = Instantiate(plates[count], spawn_point, Quaternion.identity);
-                clones.Add(clone);
+                clones.AddLast(clone);
                 count += 1;
                 count %= 3;
             }
