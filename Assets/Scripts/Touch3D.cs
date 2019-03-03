@@ -221,8 +221,6 @@ public class Touch3D : MonoBehaviour {
                 plate.GetComponent<PlateMover>().set_draggable(true);
                 Vector3 target = cam.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y,10.0f));
                 plate.transform.position = target;
-//                plate.GetComponent<PlateMover>().set_draggable(false);
-
             }
             else if (touch.phase == TouchPhase.Ended && plate != null) {
                 if (is_plate_touched) {
@@ -235,17 +233,7 @@ public class Touch3D : MonoBehaviour {
                 plate.GetComponent<Rigidbody>().constraints &= ~RigidbodyConstraints.FreezePosition;  
 
                 is_plate_touched = false;
-
-//                GameObject floor = GameObject.FindGameObjectWithTag("Floor");
-//                List<GameObject> floor_colliders = floor.GetComponent<FloorObjects>().get_colliders();
-//                foreach (GameObject floor_collider in floor_colliders) {
-//                    if (floor_collider) {
-//                        if (floor_collider.gameObject.CompareTag("Plate")) {
-//                            Destroy(floor_collider);
-//                        }
-//                    }
-//                }
-}
+                }
             }
         }
     }

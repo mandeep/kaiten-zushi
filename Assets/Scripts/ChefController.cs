@@ -95,8 +95,7 @@ public class ChefController : MonoBehaviour
         rate_changed = true;
     }
 
- 
-    // Start is called before the first frame update
+
     void Start()
     {   
         spawn_point = new Vector3(0.0f, 1.05f, 5.0f);
@@ -184,7 +183,6 @@ public class ChefController : MonoBehaviour
             if (clone != null && Vector3.Distance(clone.transform.position, destroy_point) < 0.2)
             {
                 clones.Remove(clone);
-//                source.PlayOneShot(explosion);
                 plates_destroyed += 1;
                 DestroyFX(clone.transform.position);
                 Destroy(clone);
@@ -211,22 +209,11 @@ public class ChefController : MonoBehaviour
         source.PlayOneShot(explosion);
         GameObject explosion_effect = Instantiate(effects[0], position, Quaternion.identity);
         Destroy(explosion_effect, 2.0f);
-//        float timer = 0.0f;
-//        while (timer < 5.0f) {
-//            timer += Time.deltaTime;
-//        }
-//        Destroy(explosion_effect);
-
     }
     
     public void EatFX(Vector3 position) {
         source.PlayOneShot(groan, 0.25f);
         GameObject fireworks_effect = Instantiate(effects[1], position, Quaternion.identity);
         Destroy(fireworks_effect, 2.0f);
-//        float timer = 0.0f;
-//        while (timer < 5.0f) {
-//            timer += Time.deltaTime;
-//        }
-//        Destroy(fireworks_effect);
     }
 }

@@ -52,7 +52,6 @@ public class PlateMover : MonoBehaviour
     }
 
     private void Update() {
-//        Vector3.MoveTowards(transform.position, velocity, 0.1f);
         if (!is_dragged) {
             transform.Translate(velocity);
         }
@@ -146,7 +145,6 @@ public class PlateMover : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Belt")) {
             is_touching_belt = false;
-//            is_dragged = true;
         }
     }
 }
