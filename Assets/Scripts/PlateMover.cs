@@ -17,6 +17,9 @@ public class PlateMover : MonoBehaviour
     private bool check_timer;
     private bool is_touching_belt;
     private bool is_hard_mode;
+    private ChefController chef_controller;
+    private GameObject[] tables;
+    private BeltObjects belt_controller;
     
     public void set_draggable(bool draggable) {
         is_dragged = draggable;
@@ -38,17 +41,23 @@ public class PlateMover : MonoBehaviour
         is_hard_mode = mode;
     }
 
+    private void Awake() {
+        chef_controller = GameObject.Find("Chef").GetComponent<ChefController>();
+        tables = GameObject.FindGameObjectsWithTag("Table");
+        belt_controller = GameObject.FindGameObjectWithTag("Belt").GetComponent<BeltObjects>();
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         is_dragged = false;
         is_on_table = false;
         is_touching_belt = true;
-        is_hard_mode = GameObject.Find("Chef").GetComponent<ChefController>().get_mode();
+        is_hard_mode = chef_controller.get_mode();
         table_name = null;
         plate_timer = 0.0f;
         check_timer = false;
-        speed = GameObject.FindGameObjectWithTag("Belt").GetComponent<BeltObjects>().get_speed();
+        speed = belt_controller.get_speed();
     }
 
     private void Update() {
@@ -61,17 +70,16 @@ public class PlateMover : MonoBehaviour
         }
 
         if (plate_timer > 10.0f) {
-            GameObject[] tables = GameObject.FindGameObjectsWithTag("Table");
             foreach (GameObject table in tables) {
                 int table_plate_count = table.GetComponent<TableCount>().get_plate_count();
                 if (table.gameObject.name == table_name) {
                     table.GetComponent<TableCount>().set_plate_count(table_plate_count - 1);
                 }
-                GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().EatFX(this.gameObject.transform.position);
+                chef_controller.EatFX(this.gameObject.transform.position);
                 Destroy(this.gameObject);
             }
-            int current_count = GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().get_finished();
-            GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().set_finished(current_count + 1);
+            int current_count = chef_controller.get_finished();
+            chef_controller.set_finished(current_count + 1);
         }
     }
 
@@ -105,9 +113,9 @@ public class PlateMover : MonoBehaviour
         }
         
         if (other.gameObject.CompareTag("Floor")) {
-            int current_count = GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().get_destroyed();
-            GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().set_destroyed(current_count + 1);
-            GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().DestroyFX(this.gameObject.transform.position);
+            int current_count = chef_controller.get_destroyed();
+            chef_controller.set_destroyed(current_count + 1);
+            chef_controller.DestroyFX(this.gameObject.transform.position);
             Destroy(this.gameObject);
         }
 
@@ -115,7 +123,6 @@ public class PlateMover : MonoBehaviour
             GameObject collided_plate = other.gameObject;
             
             if (collided_plate.GetComponent<PlateMover>().is_on_table) {
-                GameObject[] tables = GameObject.FindGameObjectsWithTag("Table");
                 foreach (GameObject table in tables) {
                     int table_plate_count = table.GetComponent<TableCount>().get_plate_count();
                     if (table.gameObject.name == collided_plate.GetComponent<PlateMover>().get_table_name()) {
@@ -123,9 +130,9 @@ public class PlateMover : MonoBehaviour
                     }
                 }
             }
-            int current_count = GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().get_destroyed();
-            GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().set_destroyed(current_count + 1);
-            GameObject.FindGameObjectWithTag("Chef").GetComponent<ChefController>().DestroyFX(this.gameObject.transform.position);
+            int current_count = chef_controller.get_destroyed();
+            chef_controller.set_destroyed(current_count + 1);
+            chef_controller.DestroyFX(this.gameObject.transform.position);
             Destroy(this.gameObject);
         }
 
