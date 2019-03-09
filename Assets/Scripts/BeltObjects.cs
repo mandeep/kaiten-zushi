@@ -4,29 +4,29 @@ using UnityEngine;
 public class BeltObjects : MonoBehaviour {
     private List<GameObject> collisions;
     private float speed;
-    private bool speed_changed;
+    private bool speedChanged;
     
 
     private void Start() {
         collisions = new List<GameObject>();
-        speed_changed = false;
+        speedChanged = false;
         speed = 1.0f;
     }
 
-    public void set_speed(float value) {
+    public void SetSpeed(float value) {
         speed = value;
-        speed_changed = true;
+        speedChanged = true;
     }
 
-    public float get_speed() {
+    public float GetSpeed() {
         return speed;
     }
 
     private void Update() {
-        if (speed_changed) {
+        if (speedChanged) {
             PlateMover.speed = speed;
 
-            speed_changed = false;
+            speedChanged = false;
         }
     }
 
@@ -43,7 +43,7 @@ public class BeltObjects : MonoBehaviour {
         }
     }
 
-    public List<GameObject> get_colliders() {
+    public List<GameObject> GetColliders() {
         return collisions;
     }
 }

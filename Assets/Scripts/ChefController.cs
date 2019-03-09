@@ -1,45 +1,39 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Timers;
-//using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-//using UnityEngine.XR.WSA.Input;
-
 
 public class ChefController : MonoBehaviour
 {
     public GameObject[] plates;
     public GameObject[] effects;
-    public GameObject spot_light;
+    [FormerlySerializedAs("spot_light")] public GameObject spotLight;
     private LinkedList<GameObject> clones; 
     private float rate;
-    private Vector3 spawn_point;
+    private Vector3 spawnPoint;
     private int count;
-    private bool is_spawn = true;
-    private bool is_paused = false;
+    private bool isSpawn = true;
+    private bool isPaused = false;
     public GameObject panel;
-    private bool panel_state;
-    private bool rate_changed;
+    private bool panelState;
+    private bool rateChanged;
     public AudioClip explosion;
     public AudioClip groan;
     private AudioSource source;
-    private int plates_destroyed;
-    private int plates_finished;
+    private int platesDestroyed;
+    private int platesFinished;
     private bool mode;
-    public GameObject belt_panel;
-    private bool belt_panel_state;
+    [FormerlySerializedAs("belt_panel")] public GameObject beltPanel;
+    private bool beltPanelState;
 
-    public bool get_mode() {
+    public bool GetMode() {
         return mode;
     }
 
-    public void set_mode() {
+    public void SetMode() {
         GameObject buttonText = GameObject.Find("DifficultyText");
-        GameObject[] active_plates = GameObject.FindGameObjectsWithTag("Plate");
+        GameObject[] activePlates = GameObject.FindGameObjectsWithTag("Plate");
         
         if (buttonText != null) {
             if (mode) {
@@ -52,106 +46,98 @@ public class ChefController : MonoBehaviour
         
         mode = !mode;
         
-        foreach (GameObject plate in active_plates) {
-            plate.GetComponent<PlateMover>().set_difficulty(mode);
+        foreach (GameObject plate in activePlates) {
+            plate.GetComponent<PlateMover>().SetDifficulty(mode);
         }
 
     }
     
-    public void set_destroyed(int value) {
-        plates_destroyed = value;
+    public void SetDestroyed(int value) {
+        platesDestroyed = value;
     }
     
-    public void set_finished(int value) {
-        plates_finished = value;
+    public void SetFinished(int value) {
+        platesFinished = value;
     }
     
-    public int get_destroyed() {
-        return plates_destroyed;
+    public int GetDestroyed() {
+        return platesDestroyed;
     }
     
-    public int get_finished() {
-        return plates_finished;
+    public int GetFinished() {
+        return platesFinished;
     }
     
-    public void set_spawn(bool spawning) {
-        is_spawn = spawning;
+    public void SetPause(bool paused) {
+        isPaused = paused;
     }
 
-    public bool is_spawning() {
-        return is_spawn;
+    public bool IsBeltPaused() {
+        return isPaused;
     }
     
-    public void set_pause(bool paused) {
-        is_paused = paused;
-    }
-
-    public bool is_belt_paused() {
-        return is_paused;
-    }
-    
-    public void set_rate(float new_rate) {
+    public void SetRate(float new_rate) {
         rate = new_rate;
-        rate_changed = true;
+        rateChanged = true;
     }
 
 
     void Start()
     {   
-        spawn_point = new Vector3(0.0f, 1.05f, 5.0f);
+        spawnPoint = new Vector3(0.0f, 1.05f, 5.0f);
         clones = new LinkedList<GameObject>();
         count = 0;
-        panel_state = false;
+        panelState = false;
         panel.SetActive(false);
         rate = 15;
-        rate_changed = false;
+        rateChanged = false;
         source = GetComponent<AudioSource>();
-        plates_finished = 0;
-        plates_destroyed = 0;
-        belt_panel_state = false;
+        platesFinished = 0;
+        platesDestroyed = 0;
+        beltPanelState = false;
         mode = false;
-        belt_panel.SetActive(false);
+        beltPanel.SetActive(false);
         InvokeRepeating("Spawn", 60 / rate, 60 / rate);
         
     }
 
-    public void set_belt_panel(bool state) {
-        belt_panel.SetActive(state);
-        belt_panel_state = state;
+    public void SetBeltPanel(bool state) {
+        beltPanel.SetActive(state);
+        beltPanelState = state;
     }
 
-    public bool get_belt_panel() {
-        return belt_panel_state;
+    public bool GetBeltPanel() {
+        return beltPanelState;
     }
     
-    public void set_panel(bool state) {
+    public void SetPanel(bool state) {
         panel.SetActive(state);
-        panel_state = state;
+        panelState = state;
     }
 
-    public bool get_panel() {
-        return panel_state;
+    public bool GetPanel() {
+        return panelState;
     }
 
     private void Spawn()
     {
-        if (!is_paused) {
+        if (!isPaused) {
 
             
-            Collider[] hit_colliders = Physics.OverlapBox(spawn_point,
+            Collider[] hitColliders = Physics.OverlapBox(spawnPoint,
                 plates[count].gameObject.transform.localScale / 2, Quaternion.identity);
 
-            foreach (Collider hit in hit_colliders) {
+            foreach (Collider hit in hitColliders) {
                 if (hit.CompareTag("Plate") && hit != null) {
-                    is_spawn = false;
+                    isSpawn = false;
                 }
                 else {
-                    is_spawn = true;
+                    isSpawn = true;
                 }
             }
 
-            if (is_spawn) {
-                GameObject clone = Instantiate(plates[count], spawn_point, Quaternion.identity);
+            if (isSpawn) {
+                GameObject clone = Instantiate(plates[count], spawnPoint, Quaternion.identity);
                 clones.AddLast(clone);
                 count += 1;
                 count %= 3;
@@ -163,10 +149,10 @@ public class ChefController : MonoBehaviour
     void Update()
     {
 
-        if (rate_changed) {
+        if (rateChanged) {
             CancelInvoke("Spawn");
             InvokeRepeating("Spawn", 60 / rate, 60 / rate);
-            rate_changed = false;
+            rateChanged = false;
         }
   
         if (clones.Count > 0)
@@ -178,42 +164,42 @@ public class ChefController : MonoBehaviour
                 clones.Remove(clone);
             }
 
-            Vector3 destroy_point = new Vector3(-0.5f, 1.05f, 5.0f);
+            Vector3 destroyPoint = new Vector3(-0.5f, 1.05f, 5.0f);
             
-            if (clone != null && Vector3.Distance(clone.transform.position, destroy_point) < 0.2)
+            if (clone != null && Vector3.Distance(clone.transform.position, destroyPoint) < 0.2)
             {
                 clones.Remove(clone);
-                plates_destroyed += 1;
+                platesDestroyed += 1;
                 DestroyFX(clone.transform.position);
                 Destroy(clone);
             }
 
             if (clone != null) {
-                spot_light.transform.LookAt(clones.First().transform);
+                spotLight.transform.LookAt(clones.First().transform);
             }
         }
         else {
-            spot_light.transform.LookAt(spawn_point);
+            spotLight.transform.LookAt(spawnPoint);
         }
         
-        GameObject destroyed_obj = GameObject.Find("Destroyed");
-        Text destroyed_text = destroyed_obj.GetComponent<Text>();
-        destroyed_text.text = "Plates Destroyed: " + plates_destroyed;
+        GameObject destroyedObj = GameObject.Find("Destroyed");
+        Text destroyedText = destroyedObj.GetComponent<Text>();
+        destroyedText.text = "Plates Destroyed: " + platesDestroyed;
         
-        GameObject finished_obj = GameObject.Find("Finished");
-        Text finished_text = finished_obj.GetComponent<Text>();
-        finished_text.text = "Plates Finished: " + plates_finished;
+        GameObject finishedObj = GameObject.Find("Finished");
+        Text finishedText = finishedObj.GetComponent<Text>();
+        finishedText.text = "Plates Finished: " + platesFinished;
     }
 
     public void DestroyFX(Vector3 position) {
         source.PlayOneShot(explosion);
-        GameObject explosion_effect = Instantiate(effects[0], position, Quaternion.identity);
-        Destroy(explosion_effect, 2.0f);
+        GameObject explosionEffect = Instantiate(effects[0], position, Quaternion.identity);
+        Destroy(explosionEffect, 2.0f);
     }
     
     public void EatFX(Vector3 position) {
         source.PlayOneShot(groan, 0.25f);
-        GameObject fireworks_effect = Instantiate(effects[1], position, Quaternion.identity);
-        Destroy(fireworks_effect, 2.0f);
+        GameObject fireworksEffect = Instantiate(effects[1], position, Quaternion.identity);
+        Destroy(fireworksEffect, 2.0f);
     }
 }

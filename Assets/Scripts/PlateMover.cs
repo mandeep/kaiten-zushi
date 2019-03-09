@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -10,95 +7,95 @@ public class PlateMover : MonoBehaviour
     private Rigidbody rb;
     public static float speed;
     private Vector3 velocity;
-    private bool is_dragged;
-    private bool is_on_table;
-    private String table_name;
-    private float plate_timer;
-    private bool check_timer;
-    private bool is_touching_belt;
-    private bool is_hard_mode;
-    private ChefController chef_controller;
+    private bool isDragged;
+    private bool isOnTable;
+    private String tableName;
+    private float plateTimer;
+    private bool checkTimer;
+    private bool isTouchingBelt;
+    private bool isHardMode;
+    private ChefController chefController;
     private GameObject[] tables;
-    private BeltObjects belt_controller;
+    private BeltObjects beltController;
     
-    public void set_draggable(bool draggable) {
-        is_dragged = draggable;
+    public void SetDraggable(bool draggable) {
+        isDragged = draggable;
     }
     
-    public bool is_draggable() {
-        return is_dragged;
+    public bool IsDraggable() {
+        return isDragged;
     }
     
-    public String get_table_name() {
-        return table_name;
+    public String GetTableName() {
+        return tableName;
     }
 
-    public bool is_on_belt() {
-        return is_touching_belt;
+    public bool IsOnBelt() {
+        return isTouchingBelt;
     }
     
-    public void set_difficulty(bool mode) {
-        is_hard_mode = mode;
+    public void SetDifficulty(bool mode) {
+        isHardMode = mode;
     }
 
     private void Awake() {
-        chef_controller = GameObject.Find("Chef").GetComponent<ChefController>();
+        chefController = GameObject.Find("Chef").GetComponent<ChefController>();
         tables = GameObject.FindGameObjectsWithTag("Table");
-        belt_controller = GameObject.FindGameObjectWithTag("Belt").GetComponent<BeltObjects>();
+        beltController = GameObject.FindGameObjectWithTag("Belt").GetComponent<BeltObjects>();
     }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        is_dragged = false;
-        is_on_table = false;
-        is_touching_belt = true;
-        is_hard_mode = chef_controller.get_mode();
-        table_name = null;
-        plate_timer = 0.0f;
-        check_timer = false;
-        speed = belt_controller.get_speed();
+        isDragged = false;
+        isOnTable = false;
+        isTouchingBelt = true;
+        isHardMode = chefController.GetMode();
+        tableName = null;
+        plateTimer = 0.0f;
+        checkTimer = false;
+        speed = beltController.GetSpeed();
     }
 
     private void Update() {
-        if (!is_dragged) {
+        if (!isDragged) {
             transform.Translate(velocity);
         }
 
-        if (check_timer) {
-            plate_timer += Time.deltaTime;
+        if (checkTimer) {
+            plateTimer += Time.deltaTime;
         }
 
-        if (plate_timer > 10.0f) {
+        if (plateTimer > 10.0f) {
             foreach (GameObject table in tables) {
-                int table_plate_count = table.GetComponent<TableCount>().get_plate_count();
-                if (table.gameObject.name == table_name) {
-                    table.GetComponent<TableCount>().set_plate_count(table_plate_count - 1);
+                int tablePlateCount = table.GetComponent<TableCount>().GetPlateCount();
+                if (table.gameObject.name == tableName) {
+                    table.GetComponent<TableCount>().SetPlateCount(tablePlateCount - 1);
                 }
-                chef_controller.EatFX(this.gameObject.transform.position);
+                chefController.EatFX(this.gameObject.transform.position);
                 Destroy(this.gameObject);
             }
-            int current_count = chef_controller.get_finished();
-            chef_controller.set_finished(current_count + 1);
+            int currentCount = chefController.GetFinished();
+            chefController.SetFinished(currentCount + 1);
         }
     }
 
     private void OnCollisionStay(Collision other)
     {
         
-        if (other.gameObject.name == "Left Belt" || (other.gameObject.name == "Bottomleft Tray" && !is_hard_mode))
+        if (other.gameObject.name == "Left Belt" || (other.gameObject.name == "Bottomleft Tray" && !isHardMode))
         {
             velocity = Vector3.forward * speed * Time.deltaTime;
 
-        } else if (other.gameObject.name == "Top Belt" || (other.gameObject.name == "Topleft Tray" && !is_hard_mode))
+        } else if (other.gameObject.name == "Top Belt" || (other.gameObject.name == "Topleft Tray" && !isHardMode))
         {
             velocity = Vector3.right * speed * Time.deltaTime;
 
-        } else if (other.gameObject.name == "Right Belt" || (other.gameObject.name == "Topright Tray" && !is_hard_mode))
+        } else if (other.gameObject.name == "Right Belt" || (other.gameObject.name == "Topright Tray" && !isHardMode))
         {
             velocity = Vector3.back * speed * Time.deltaTime;
 
-        } else if (other.gameObject.name == "Bottom Belt" || (other.gameObject.name == "Bottomright Tray" && !is_hard_mode))
+        } else if (other.gameObject.name == "Bottom Belt" || (other.gameObject.name == "Bottomright Tray" && !isHardMode))
         {
             velocity = Vector3.left * speed * Time.deltaTime;
 
@@ -107,51 +104,51 @@ public class PlateMover : MonoBehaviour
 
     private void OnCollisionEnter(Collision other) {
         if (other.gameObject.CompareTag("Table")) {
-            is_on_table = true;
-            table_name = other.gameObject.name;
-            check_timer = true;
+            isOnTable = true;
+            tableName = other.gameObject.name;
+            checkTimer = true;
         }
         
         if (other.gameObject.CompareTag("Floor")) {
-            int current_count = chef_controller.get_destroyed();
-            chef_controller.set_destroyed(current_count + 1);
-            chef_controller.DestroyFX(this.gameObject.transform.position);
+            int currentCount = chefController.GetDestroyed();
+            chefController.SetDestroyed(currentCount + 1);
+            chefController.DestroyFX(this.gameObject.transform.position);
             Destroy(this.gameObject);
         }
 
         if (other.gameObject.CompareTag("Plate")) {
-            GameObject collided_plate = other.gameObject;
+            GameObject collidedPlate = other.gameObject;
             
-            if (collided_plate.GetComponent<PlateMover>().is_on_table) {
+            if (collidedPlate.GetComponent<PlateMover>().isOnTable) {
                 foreach (GameObject table in tables) {
-                    int table_plate_count = table.GetComponent<TableCount>().get_plate_count();
-                    if (table.gameObject.name == collided_plate.GetComponent<PlateMover>().get_table_name()) {
-                        table.GetComponent<TableCount>().set_plate_count(table_plate_count - 1);
+                    int tablePlateCount = table.GetComponent<TableCount>().GetPlateCount();
+                    if (table.gameObject.name == collidedPlate.GetComponent<PlateMover>().GetTableName()) {
+                        table.GetComponent<TableCount>().SetPlateCount(tablePlateCount - 1);
                     }
                 }
             }
-            int current_count = chef_controller.get_destroyed();
-            chef_controller.set_destroyed(current_count + 1);
-            chef_controller.DestroyFX(this.gameObject.transform.position);
+            int currentCount = chefController.GetDestroyed();
+            chefController.SetDestroyed(currentCount + 1);
+            chefController.DestroyFX(this.gameObject.transform.position);
             Destroy(this.gameObject);
         }
 
         if (other.gameObject.CompareTag("Belt")) {
-            is_touching_belt = true;
+            isTouchingBelt = true;
         }
 
-        if (other.gameObject.CompareTag("Tray") && is_hard_mode) {
+        if (other.gameObject.CompareTag("Tray") && isHardMode) {
             velocity = Vector3.zero;
         }
     }
 
     private void OnCollisionExit(Collision other) {
         if (other.gameObject.CompareTag("Table")) {
-            check_timer = false;
-            plate_timer = 0.0f;
+            checkTimer = false;
+            plateTimer = 0.0f;
         }
         if (other.gameObject.CompareTag("Belt")) {
-            is_touching_belt = false;
+            isTouchingBelt = false;
         }
     }
 }

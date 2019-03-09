@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Numerics;
-using System.Timers;
-//using NUnit.Framework.Constraints;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -133,12 +128,12 @@ public class Touch3D : MonoBehaviour {
                         ChefController belt_panel_object = chef.GetComponent<ChefController>();
                         
                         if (belt_panel_object != null) {
-                            bool belt_panel_state = belt_panel_object.get_belt_panel();
+                            bool belt_panel_state = belt_panel_object.GetBeltPanel();
                             if (belt_panel_state) {
-                                belt_panel_object.set_belt_panel(false);
+                                belt_panel_object.SetBeltPanel(false);
                             }
                             else {
-                                belt_panel_object.set_belt_panel(true);
+                                belt_panel_object.SetBeltPanel(true);
                             }
                         }
 
@@ -153,14 +148,14 @@ public class Touch3D : MonoBehaviour {
                             }
                             
                             
-                            List<GameObject> colliders = belt.GetComponent<BeltObjects>().get_colliders();
+                            List<GameObject> colliders = belt.GetComponent<BeltObjects>().GetColliders();
                             foreach (GameObject belt_collider in colliders) {
                                 if (belt_collider) {
-                                    if (belt_collider.GetComponent<PlateMover>().is_draggable()) {
-                                        belt_collider.GetComponent<PlateMover>().set_draggable(false);
+                                    if (belt_collider.GetComponent<PlateMover>().IsDraggable()) {
+                                        belt_collider.GetComponent<PlateMover>().SetDraggable(false);
                                     }
                                     else {
-                                        belt_collider.GetComponent<PlateMover>().set_draggable(true);
+                                        belt_collider.GetComponent<PlateMover>().SetDraggable(true);
                                     }
                                 }
                             }
@@ -176,11 +171,11 @@ public class Touch3D : MonoBehaviour {
                         
                         
 
-                        if (chef.GetComponent<ChefController>().is_belt_paused()) {
-                            chef.GetComponent<ChefController>().set_pause(false);    
+                        if (chef.GetComponent<ChefController>().IsBeltPaused()) {
+                            chef.GetComponent<ChefController>().SetPause(false);    
                         }
                         else {
-                            chef.GetComponent<ChefController>().set_pause(true);
+                            chef.GetComponent<ChefController>().SetPause(true);
                         }
                     }
                     else if (hit.collider.gameObject.CompareTag("Chef") && !is_plate_touched && !is_belt_touched) {
@@ -195,12 +190,12 @@ public class Touch3D : MonoBehaviour {
                         
                         
                         ChefController chef_panel_object = hit.collider.gameObject.GetComponent<ChefController>();
-                        bool chef_panel_state = chef_panel_object.get_panel();
+                        bool chef_panel_state = chef_panel_object.GetPanel();
                         if (chef_panel_state) {
-                            chef_panel_object.set_panel(false);
+                            chef_panel_object.SetPanel(false);
                         }
                         else {
-                            chef_panel_object.set_panel(true);
+                            chef_panel_object.SetPanel(true);
                         }
                         
                         if (is_chef_touched) {
@@ -218,7 +213,7 @@ public class Touch3D : MonoBehaviour {
                 plate.GetComponent<Rigidbody>().isKinematic = true;
                 plate.GetComponent<Rigidbody>().detectCollisions = false;
                 plate.GetComponent<Rigidbody>().useGravity = false;
-                plate.GetComponent<PlateMover>().set_draggable(true);
+                plate.GetComponent<PlateMover>().SetDraggable(true);
                 Vector3 target = cam.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y,10.0f));
                 plate.transform.position = target;
             }
@@ -244,9 +239,9 @@ public class Touch3D : MonoBehaviour {
         // the plate moves again. we also need to have this in LateUpdate so that the plate's
         // OnCollisionEnter method has time to finish
         if (plate != null) {
-            bool is_touching_belt = plate.GetComponent<PlateMover>().is_on_belt();
+            bool is_touching_belt = plate.GetComponent<PlateMover>().IsOnBelt();
             if (is_touching_belt) {
-                plate.GetComponent<PlateMover>().set_draggable(false);
+                plate.GetComponent<PlateMover>().SetDraggable(false);
                 plate.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             }
         }
