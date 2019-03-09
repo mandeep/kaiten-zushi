@@ -5352,11 +5352,11 @@ MonoBehaviour:
   effects:
   - {fileID: 100002, guid: f7efb0d9df2264096af57128df85dddb, type: 3}
   - {fileID: 167058, guid: 1625b0df15965450c86850dd6d345e87, type: 3}
-  spot_light: {fileID: 699749205}
+  spotLight: {fileID: 699749205}
   panel: {fileID: 1008452907}
   explosion: {fileID: 8300000, guid: fa0411c9b27714eff890899127e75ed3, type: 3}
   groan: {fileID: 8300000, guid: 4fa542883650840f28fbac2c175062ac, type: 3}
-  belt_panel: {fileID: 571627747}
+  beltPanel: {fileID: 571627747}
 --- !u!136 &2144390783
 CapsuleCollider:
   m_ObjectHideFlags: 0
